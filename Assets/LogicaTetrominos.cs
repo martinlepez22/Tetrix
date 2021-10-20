@@ -12,6 +12,7 @@ public class LogicaTetrominos : MonoBehaviour
     public static int alto = 20;
     public static int ancho = 10;
 
+
     public Vector3 puntoRotacion;
 
     private static Transform[,] grid = new Transform[ancho, alto];
@@ -24,6 +25,8 @@ public class LogicaTetrominos : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        //MOVIMIENTO DE LA FICHA
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             transform.position += new Vector3(-1, 0, 0);
@@ -44,6 +47,7 @@ public class LogicaTetrominos : MonoBehaviour
             }
         }
 
+        //CAIDA DE LA FICHA
         if(Time.time - tiempoAmterior > (Input.GetKey(KeyCode.DownArrow) ? tiempoCaida / 20: tiempoCaida))
 
         {
@@ -54,6 +58,7 @@ public class LogicaTetrominos : MonoBehaviour
 
                 AñadirAlGrid();
 
+                RevisarLineas();
                 this.enabled = false;
                 FindObjectOfType<LogicaGenerador>().NuevoTetromino();
             }
@@ -72,7 +77,7 @@ public class LogicaTetrominos : MonoBehaviour
         }
     }
 
-
+    //LIMITES DE MOVIMIENTO
     bool Limites()
     {
         foreach (Transform hijo in transform)
@@ -95,7 +100,7 @@ public class LogicaTetrominos : MonoBehaviour
         return true;
     }
 
-
+    //AÑADIR FICHAS CUANDO LEGUEN AL LIMITE Y
     void AñadirAlGrid()
     {
         foreach(Transform hijo in transform)
@@ -105,6 +110,69 @@ public class LogicaTetrominos : MonoBehaviour
 
             grid[enteroX, enteroY] = hijo;
 
+            if(enteroY >= 19)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
+    }
+
+    //ELIMINAR LINEAS DE FICHAS COMPLETAS
+    void RevisarLineas()
+    {
+        for (int i = alto -1; i >= 0; i--)
+        {
+            if (TieneLinea(i))
+            {
+                BorrarLinea(i);
+                BajarLinea(i);
+            }
+        }
+    }
+
+
+    bool TieneLinea(int i)
+    {
+        for (int j = 0; j < ancho; j++)
+        {
+            if(grid[j,i] == null)
+            {
+                return false;
+            }
+             
+                
+              
+        }
+
+        return true;
+    }
+
+
+   
+    void BorrarLinea(int i)
+    {
+        for (int j = 0; j < ancho; j++)
+        {
+            
+            Destroy(grid[j, i].gameObject);
+            grid[j, i] = null;
+        }
+    }
+
+
+    void BajarLinea(int i)
+    {
+        for (int y = i; y < alto; y++)
+        {
+            for (int j = 0; j < ancho; j++)
+            {
+                if(grid[j,y] != null)
+                {
+                    grid[j, y - 1] = grid[j, y];
+                    grid[j, y] = null;
+                    grid[j, y - 1].transform.position -= new Vector3(0, 1, 0);
+                }
+            }
         }
     }
 }
