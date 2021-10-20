@@ -16,6 +16,10 @@ public class LogicaTetrominos : MonoBehaviour
     public Vector3 puntoRotacion;
 
     private static Transform[,] grid = new Transform[ancho, alto];
+
+    public static int puntaje = 0;
+
+    public static int nivelDeDificultad = 0; 
     // Start is called before the first frame update
     void Start()
     {
@@ -75,6 +79,9 @@ public class LogicaTetrominos : MonoBehaviour
                 transform.RotateAround(transform.TransformPoint(puntoRotacion), new Vector3(0, 0, 1), 90);
             }
         }
+
+        AumentarNivel();
+        AumentarDificultad();
     }
 
     //LIMITES DE MOVIMIENTO
@@ -112,6 +119,10 @@ public class LogicaTetrominos : MonoBehaviour
 
             if(enteroY >= 19)
             {
+                puntaje = 0;
+                nivelDeDificultad = 0;
+                tiempoCaida = 0.8f;
+
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
@@ -143,7 +154,8 @@ public class LogicaTetrominos : MonoBehaviour
                 
               
         }
-
+        puntaje += 100;
+        Debug.Log(puntaje);
         return true;
     }
 
@@ -173,6 +185,33 @@ public class LogicaTetrominos : MonoBehaviour
                     grid[j, y - 1].transform.position -= new Vector3(0, 1, 0);
                 }
             }
+        }
+    }
+
+    void AumentarNivel()
+    {
+        switch (puntaje)
+        {
+            case 200:
+                nivelDeDificultad = 1;
+                break;
+            case 400:
+                nivelDeDificultad = 2;
+                break;
+        }
+    }
+
+
+    void AumentarDificultad()
+    {
+        switch (nivelDeDificultad)
+        {
+            case 1:
+                tiempoCaida = 0.4f;
+                break;
+            case 2:
+                tiempoCaida = 0.2f;
+                break;
         }
     }
 }
